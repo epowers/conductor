@@ -541,6 +541,18 @@ class CopilotProvider(AgentProvider):
             if self._mcp_servers:
                 session_kwargs["mcp_servers"] = self._mcp_servers
 
+            provider_type: str | None = os.environ.get("COPILOT_PROVIDER_TYPE", None)
+            wire_api: str | None = os.environ.get("COPILOT_PROVIDER_WIRE_API", None)
+            base_url: str | None = os.environ.get("COPILOT_PROVIDER_BASE_URL", None)
+            api_key: str | None = os.environ.get("COPILOT_PROVIDER_API_KEY", None)
+            if base_url:
+                session_kwargs["provider"] = {
+                    "type": provider_type or "openai",
+                    "base_url": base_url,
+                    "wire_api": wire_api or "completions",
+                    "api_key": api_key,
+                }
+
             # Attempt to resume a previous session if one exists for this agent
             session: Any = None
             resume_sid = self._resume_session_ids.get(agent.name)
